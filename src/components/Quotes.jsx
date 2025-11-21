@@ -1,5 +1,40 @@
 import { useState, useEffect } from "react";
 
+const QUOTES = {
+  Happy: [
+    "Smile, it’s contagious! 😄",
+    "Happiness looks good on you!",
+    "Senyum senyum sendiri lu, gila ya? 😆",
+    "Kebahagiaan itu lu bisa rasain pas beres BAB, lega bahagia 🚽",
+    "Quotes apaan ini dawg? 💔🥀"
+  ],
+  Chill: [
+    "Breathe in, breathe out... 🌿",
+    "Keep calm and vibe on.",
+    "Anjay, ovt. Chill bre, gak lagi mencret kan? 😎",
+    "Ngopi ngapa ngopi, jan kasih liatin urat leher mulu ☕"
+  ],
+  Focus: [
+    "Focus on what matters. 🎯",
+    "One task at a time.",
+    "Lu bukan cewe, jan multitasking, malah lieur.",
+    "Hardolin? Cih, sudah lama kata itu tidak terdengar lagi dekade ini.",
+    "DISIPLIN GOBLOG!"
+  ],
+  Sleepy: [
+    "Ngantuk? Kopi dulu apa tidur dulu? ☕💤",
+    "Matikan notifikasi, nyalakan mode bantal.",
+    "Scroll terus sampe ketiduran, klasik banget bre.",
+    "Produktif juga butuh tidur, bukan cuma niat."
+  ],
+  Hype: [
+    "Gaskeun, dunia belum siap liat progress lu. 🔥",
+    "Playlist EDM udah, energi udah, tinggal niat.",
+    "Kalau sekarang nggak gerak, kapan lagi? 🚀",
+    "Main karakter energy only today."
+  ]
+};
+
 const getFontFamilyForMood = (mood) => {
   switch (mood) {
     case 'Happy':
@@ -17,64 +52,42 @@ const getFontFamilyForMood = (mood) => {
   }
 };
 
+const DEFAULT_QUOTE = "Pick a mood heula atuh meh teu garing!";
+
 const Quotes = ({ mood, className, refresh }) => {
-  const quotes = {
-    Happy: [
-      "Smile, it’s contagious! 😄",
-      "Happiness looks good on you!",
-      "Senyum senyum sendiri lu, gila ya? 😆",
-      "Kebahagiaan itu lu bisa rasain pas beres BAB, lega bahagia 🚽",
-      "Quotes apaan ini dawg? 💔🥀"
-    ],
-    Chill: [
-      "Breathe in, breathe out... 🌿",
-      "Keep calm and vibe on.",
-      "Anjay, ovt. Chill bre, gak lagi mencret kan? 😎",
-      "Ngopi ngapa ngopi, jan kasih liatin urat leher mulu ☕"
-    ],
-    Focus: [
-      "Focus on what matters. 🎯",
-      "One task at a time.",
-      "Lu bukan cewe, jan multitasking, malah lieur.",
-      "Hardolin? Cih, sudah lama kata itu tidak terdengar lagi dekade ini.",
-      "DISIPLIN GOBLOG!"
-    ],
-    Sleepy: [
-      "Ngantuk? Kopi dulu apa tidur dulu? ☕💤",
-      "Matikan notifikasi, nyalakan mode bantal.",
-      "Scroll terus sampe ketiduran, klasik banget bre.",
-      "Produktif juga butuh tidur, bukan cuma niat."
-    ],
-    Hype: [
-      "Gaskeun, dunia belum siap liat progress lu. 🔥",
-      "Playlist EDM udah, energi udah, tinggal niat.",
-      "Kalau sekarang nggak gerak, kapan lagi? 🚀",
-      "Main karakter energy only today."
-    ]
-  };
-
   const [fade, setFade] = useState(true);
-  const [quote, setQuote] = useState("Pick a mood heula atuh meh teu garing!"); 
-  // ✅ default text dulu, jangan getQuote()
-
-  const getQuote = () => {
-    if (!mood) return "Pick a mood heula atuh meh teu garing!";
-    const list = quotes[mood];
-    return list[Math.floor(Math.random() * list.length)];
-  };
+  const [quote, setQuote] = useState(DEFAULT_QUOTE);
 
   useEffect(() => {
-    if (!mood) return; // kalau mood kosong, skip
+    if (!mood) {
+      const resetTimeout = setTimeout(() => {
+        setQuote(DEFAULT_QUOTE);
+        setFade(true);
+      }, 0);
+      return () => clearTimeout(resetTimeout);
+    }
 
-    setFade(false);
+    const list = QUOTES[mood];
+    if (!list || list.length === 0) {
+      const emptyTimeout = setTimeout(() => {
+        setQuote(DEFAULT_QUOTE);
+        setFade(true);
+      }, 0);
+      return () => clearTimeout(emptyTimeout);
+    }
 
-    const timeout = setTimeout(() => {
-      setQuote(getQuote());
+    const fadeTimeout = setTimeout(() => setFade(false), 0);
+    const updateTimeout = setTimeout(() => {
+      const next = list[Math.floor(Math.random() * list.length)];
+      setQuote(next);
       setFade(true);
     }, 300);
 
-    return () => clearTimeout(timeout);
-  }, [mood, refresh]); // trigger tiap mood atau refresh berubah
+    return () => {
+      clearTimeout(fadeTimeout);
+      clearTimeout(updateTimeout);
+    };
+  }, [mood, refresh]);
 
   return (
     <p
