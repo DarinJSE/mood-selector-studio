@@ -1,0 +1,32 @@
+{
+  "width": 48,
+  "height": 48,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "layers": [
+    {
+      "name": "ground",
+      "type": "tilelayer",
+      "data": [],
+      "visible": true
+    },
+    {
+      "name": "world",
+      "type": "tilelayer",
+      "data": [],
+      "visible": true,
+      "properties": [
+        { "name": "collides", "value": true, "type": "bool" }
+      ]
+    }
+  ],
+  "tilesets": [
+    {
+      "firstgid": 1,
+      "name": "tileset",
+      "tilewidth": 32,
+      "tileheight": 32
+    }
+  ]
+}
+
